@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="style.css">
+<html>
+<head>
+  <title>Ejemplo de Edición de Texto en un Rectángulo</title>
+  <style>
+    .rectangulo {
+      width: 360px;
+      height: 200px;
+      border: 1px solid black;
+      padding: 20px 40px;
+      margin: 20px;
+      background-color: #ffffff;
+      background-image: none;
+      background-size: contain;
+      display: flex;
+      align-items: center center;
+      justify-content: center center;
+      text-align: center center;
+    }
+
+    .texto {
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Ejemplo de Edición de Texto en un Rectángulo</h1>
+
+  <div class="rectangulo" id="rectangulo" contenteditable="true">
+    <p class="texto" id="texto">Haz clic aquí para editar el texto</p>
+  </div>
+
+  <form>
+    <label for="fondo">Seleccionar fondo:</label>
+    <select id="fondo" name="fondo" onchange="cambiarFondo()">
+      <option value="">Seleccione un fondo</option>
+      <option value="images/Diseño sin título (47).png">Fondo 1</option>
+      <option value="ruta/fondo2.jpg">Fondo 2</option>
+      <option value="ruta/fondo3.jpg">Fondo 3</option>
+    </select>
+
+    <br>
+
+    <label for="tipografia">Seleccionar tipografía:</label>
+    <select id="tipografia" name="tipografia">
+      <option value="Arial">Arial</option>
+      <option value="Verdana">Verdana</option>
+      <option value="Times New Roman">Times New Roman</option>
+      <option value="system-ui">apple</option>
+      <!-- Agrega más opciones de tipografía según tus necesidades -->
+    </select>
+
+    <br>
+
+    <label for="tamañoTexto">Seleccionar tamaño de texto:</label>
+    <input type="number" id="tamañoTexto" name="tamañoTexto" min="10" max="100" value="20" onchange="cambiarTamañoTexto()">
+
+    <br>
+
+    <label for="colorTexto">Seleccionar color de texto:</label>
+    <input type="color" id="colorTexto" name="colorTexto" onchange="cambiarColorTexto()">
+
+    <br>
+
+    <input type="button" value="Descargar como SVG" onclick="generarArchivoSVG()">
+
+  </form>
+
+  <script>
+    function cambiarFondo() {
+      var selectFondo = document.getElementById('fondo');
+      var rectangulo = document.getElementById('rectangulo');
+      var fondoSeleccionado = selectFondo.options[selectFondo.selectedIndex].value;
+
+      rectangulo.style.backgroundImage = fondoSeleccionado !== "" ? "url('" + fondoSeleccionado + "')" : "none";
+    }
+
+    document.getElementById('tipografia').addEventListener('change', function() {
+      var texto = document.getElementById('texto');
+      texto.style.fontFamily = this.value;
+    });
+
+    function cambiarTamañoTexto() {
+      var tamañoTexto = document.getElementById('tamañoTexto').value;
+      var texto = document.getElementById('texto');
+      texto.style.fontSize = tamañoTexto + 'px';
+    }
+
+    function cambiarColorTexto() {
+      var colorTexto = document.getElementById('colorTexto').value;
+      var texto = document.getElementById('texto');
+      texto.style.color = colorTexto;
+    }
+
+    function generarArchivoSVG() {
+      var texto = document.getElementById('texto').textContent;
+      var rectangulo = document.getElementById('rectangulo');
+      var rectanguloEstilo = window.getComputedStyle(rectangulo);
+      var rectanguloAncho = rectangulo.offsetWidth;
+      var rectanguloAlto = rectangulo.offsetHeight;
+
+      var svgContent = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="${rectanguloAncho}" height="${rectanguloAlto}">
+          <foreignObject width="100%" height="100%">
+            <div xmlns="http://www.w3.org/1999/xhtml" style="background-color: ${rectanguloEstilo.backgroundColor}; background-image: ${rectanguloEstilo.backgroundImage}; background-size: ${rectanguloEstilo.backgroundSize}; display: ${rectanguloEstilo.display}; align-items: ${rectanguloEstilo.alignItems}; justify-content: ${rectanguloEstilo.justifyContent}; text-align: ${rectanguloEstilo.textAlign}; width: ${rectanguloAncho}px; height: ${rectanguloAlto}px;">
+              ${texto}
+            </div>
+          </foreignObject>
+        </svg>
+      `;
+
+      var svgBlob = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
+      var svgUrl = URL.createObjectURL(svgBlob);
+
+      var downloadLink = document.createElement('a');
+      downloadLink.href = svgUrl;
+      downloadLink.download = 'rectangulo.svg';
+      downloadLink.style.display = 'none';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    }
+  </script>
+</body>
+</html>
